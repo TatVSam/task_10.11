@@ -12,7 +12,7 @@ const minWeightInput = document.querySelector('.minweight__input'); // поле 
 const maxWeightInput = document.querySelector('.maxweight__input'); // поле с весом
 const addActionButton = document.querySelector('.add__action__btn'); // кнопка добавления
 //var classColor = ["violet", "green", "carmazin", "yellow", "lightbrown"];
-var colorEngArray = ["violet", "green", "carmazin", "yellow", "lightbrown"];
+let colorEngArray = ["violet", "green", "carmazin", "yellow", "lightbrown"];
 
 // список фруктов в JSON формате
 let fruitsJSON = `[
@@ -31,7 +31,13 @@ const colorRusToEng = fruits.map ((fruit, index) => ({
   colorRus: fruit.color,
   colorEng: colorEngArray[index]
 
-}))
+}));
+
+function engColorFromRus (color) {
+  return colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == color)].colorEng
+}
+
+
 /*** ОТОБРАЖЕНИЕ ***/
 
 // отрисовка карточек
@@ -54,8 +60,8 @@ const display = () => {
       <div>color: ${fruits[i].color}</div>
       <div>weight (кг): ${fruits[i].weight}</div>
     </div>`;
-    console.log (fruits[i].color + " " + colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == fruits[i].color)].colorEng);
-    newLi.className = `fruit__item fruit_${colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == fruits[i].color)].colorEng}`;
+   
+    newLi.className = `fruit__item fruit_${engColorFromRus(fruits[i].color)}`;
     fruitsList.appendChild(newLi);
   }
 };
@@ -96,9 +102,9 @@ const shuffleFruits = () => {
     //initFruits.forEach (elem => console.log(elem));
   result.forEach((element, index) => {if (element !== initFruits[index]) marker = false});
   
- if (marker) alert ("Массив совпадает с изначальным!");
+  if (marker) alert ("Массив совпадает с изначальным!");
   
-    fruits = result;    
+  fruits = result;    
   
 };
 
@@ -135,17 +141,71 @@ filterButton.addEventListener('click', () => {
 let sortKind = 'bubbleSort'; // инициализация состояния вида сортировки
 let sortTime = '-'; // инициализация состояния времени сортировки
 
-const comparationColor = (a, b) => {
-  // TODO: допишите функцию сравнения двух элементов по цвету
+const comparationColor = (fruit1, fruit2) => {
+  const priority = ['розово-красный', 'желтый', 'светло-коричневый', 'зеленый', 'фиолетовый'];
+  const priority1 = priority.indexOf(fruit1.color);
+  const priority2 = priority.indexOf(fruit2.color);
+  return priority1 > priority2;
 };
 
 const sortAPI = {
-  bubbleSort(arr, comparation) {
+ bubbleSort(arr, comparation) {
     // TODO: допишите функцию сортировки пузырьком
+    const n = arr.length;
+    // внешняя итерация по элементам
+    for (let i = 0; i < n-1; i++) { 
+        // внутренняя итерация для перестановки элемента в конец массива
+        for (let j = 0; j < n-1-i; j++) { 
+            // сравниваем элементы
+            if (comparation(arr[j], arr[j+1])) { 
+                
+                [arr[j + 1], arr[j]] = [arr[j], arr[j + 1]];
+            }
+        }
+    } 
   },
 
-  quickSort(arr, comparation) {
+ 
+quickSort(arr, comparation) {
     // TODO: допишите функцию быстрой сортировки
+   // функция разделитель
+function partition(items, left, right) {
+  var pivot = items[Math.floor((right + left) / 2)],
+      i = left,
+      j = right;
+  while (i <= j) {
+      while (comparation (pivot, items[i])) {
+          i++;
+      }
+      while (comparation (items[j], pivot)) {
+          j--;
+      }
+      if (i <= j) {
+          [items[i], items[j]] = [items[j], items[i]];
+          i++;
+          j--;
+      }
+  }
+  return i;
+}
+
+function quickSortAlgorithm (items, left, right) {
+  var index;
+  if (items.length > 1) {
+      left = typeof left != "number" ? 0 : left;
+      right = typeof right != "number" ? items.length - 1 : right;
+      index = partition(items, left, right);
+      if (left < index - 1) {
+          quickSortAlgorithm(items, left, index - 1);
+      }
+      if (index < right) {
+          quickSortAlgorithm(items, index, right);
+      }
+  }
+  return items;
+  }
+   return quickSortAlgorithm (arr);
+ 
   },
 
   // выполняет сортировку и производит замер времени
@@ -163,14 +223,18 @@ sortTimeLabel.textContent = sortTime;
 
 sortChangeButton.addEventListener('click', () => {
   // TODO: переключать значение sortKind между 'bubbleSort' / 'quickSort'
+  sortKind = sortKind == 'bubbleSort' ? 'quickSort' : 'bubbleSort';
+  sortKindLabel.textContent = sortKind;
 });
 
 sortActionButton.addEventListener('click', () => {
   // TODO: вывести в sortTimeLabel значение 'sorting...'
+  sortTimeLabel.textContent = 'sorting...';
   const sort = sortAPI[sortKind];
   sortAPI.startSort(sort, fruits, comparationColor);
   display();
   // TODO: вывести в sortTimeLabel значение sortTime
+  sortTimeLabel.textContent = sortTime;
 });
 
 /*** ДОБАВИТЬ ФРУКТ ***/
