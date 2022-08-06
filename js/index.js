@@ -8,9 +8,11 @@ const sortChangeButton = document.querySelector('.sort__change__btn'); // кно
 const sortActionButton = document.querySelector('.sort__action__btn'); // кнопка сортировки
 const kindInput = document.querySelector('.kind__input'); // поле с названием вида
 const colorInput = document.querySelector('.color__input'); // поле с названием цвета
-const weightInput = document.querySelector('.weight__input'); // поле с весом
+const minWeightInput = document.querySelector('.minweight__input'); // поле с весом
+const maxWeightInput = document.querySelector('.maxweight__input'); // поле с весом
 const addActionButton = document.querySelector('.add__action__btn'); // кнопка добавления
-var classColor = ["violet", "green", "carmazin", "yellow", "lightbrown"];
+//var classColor = ["violet", "green", "carmazin", "yellow", "lightbrown"];
+var colorEngArray = ["violet", "green", "carmazin", "yellow", "lightbrown"];
 
 // список фруктов в JSON формате
 let fruitsJSON = `[
@@ -21,9 +23,15 @@ let fruitsJSON = `[
   {"kind": "Тамаринд", "color": "светло-коричневый", "weight": 22}
 ]`;
 
+
 // преобразование JSON в объект JavaScript
 let fruits = JSON.parse(fruitsJSON);
 
+const colorRusToEng = fruits.map ((fruit, index) => ({
+  colorRus: fruit.color,
+  colorEng: colorEngArray[index]
+
+}))
 /*** ОТОБРАЖЕНИЕ ***/
 
 // отрисовка карточек
@@ -38,7 +46,7 @@ const display = () => {
     // TODO: формируем новый элемент <li> при помощи document.createElement,
     // и добавляем в конец списка fruitsList при помощи document.appendChild
     let newLi = document.createElement("li");
-    newLi.className = `fruit__item fruit_${classColor[i]}`;
+    
     newLi.innerHTML = 
     `<div class="fruit__info">
       <div>index: ${i}</div>
@@ -46,6 +54,8 @@ const display = () => {
       <div>color: ${fruits[i].color}</div>
       <div>weight (кг): ${fruits[i].weight}</div>
     </div>`;
+    console.log (fruits[i].color + " " + colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == fruits[i].color)].colorEng);
+    newLi.className = `fruit__item fruit_${colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == fruits[i].color)].colorEng}`;
     fruitsList.appendChild(newLi);
   }
 };
@@ -63,7 +73,7 @@ const getRandomInt = (min, max) => {
 // перемешивание массива
 const shuffleFruits = () => {
   let result = [];
-  let resultClass = [];
+  
   let initFruits = [];
   fruits.forEach(elem => initFruits.push(elem));
   
@@ -80,25 +90,16 @@ const shuffleFruits = () => {
     let randomIndex = getRandomInt(0, fruits.length - 1);
     result.push(fruits[randomIndex]);
     fruits.splice(randomIndex, 1);
-
-    resultClass.push(classColor[randomIndex]);
-    classColor.splice(randomIndex, 1);
     
   }
 
     //initFruits.forEach (elem => console.log(elem));
   result.forEach((element, index) => {if (element !== initFruits[index]) marker = false});
   
- if (marker) {
-  alert ("Массив совпадает с изначальным!");
+ if (marker) alert ("Массив совпадает с изначальным!");
   
-    fruits = result;
-    classColor = resultClass;
-    
- } else {
-    fruits = result;
-    classColor = resultClass;
-  }
+    fruits = result;    
+  
 };
 
 shuffleButton.addEventListener('click', () => {
@@ -110,13 +111,22 @@ shuffleButton.addEventListener('click', () => {
 
 // фильтрация массива
 const filterFruits = () => {
-  fruits.filter((item) => {
-    // TODO: допишите функцию
-  });
+  
+  let minWeight = minWeightInput.value / 1 || 0;
+  let maxWeight = maxWeightInput.value / 1 || 50;
+  minWeight = minWeight < 0 ? 12 : minWeight;
+  maxWeight = maxWeight < 0 ? 50 : maxWeight;
+
+  const filteredFruits = fruits.filter(item => item.weight >= minWeight && item.weight <= maxWeight);
+  minWeightInput.value = minWeight;
+  maxWeightInput.value = maxWeight;
+  return filteredFruits;    
+  
 };
 
 filterButton.addEventListener('click', () => {
-  filterFruits();
+  fruits = filterFruits();
+  
   display();
 });
 

@@ -47,6 +47,10 @@ input {
   max-width: 200px;
 }
 
+input::placeholder {
+  color: rgb(242, 241, 241);
+}
+
 main {
   display: flex;
   flex-direction: row;
