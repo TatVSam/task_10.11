@@ -10,6 +10,7 @@ const kindInput = document.querySelector('.kind__input'); // поле с наз�
 const colorInput = document.querySelector('.color__input'); // поле с названием цвета
 const weightInput = document.querySelector('.weight__input'); // поле с весом
 const addActionButton = document.querySelector('.add__action__btn'); // кнопка добавления
+var classColor = ["violet", "green", "carmazin", "yellow", "lightbrown"];
 
 // список фруктов в JSON формате
 let fruitsJSON = `[
@@ -29,10 +30,23 @@ let fruits = JSON.parse(fruitsJSON);
 const display = () => {
   // TODO: очищаем fruitsList от вложенных элементов,
   // чтобы заполнить актуальными данными из fruits
-
+  fruitsList.innerHTML = "";
+  
+  
+  
   for (let i = 0; i < fruits.length; i++) {
     // TODO: формируем новый элемент <li> при помощи document.createElement,
     // и добавляем в конец списка fruitsList при помощи document.appendChild
+    let newLi = document.createElement("li");
+    newLi.className = `fruit__item fruit_${classColor[i]}`;
+    newLi.innerHTML = 
+    `<div class="fruit__info">
+      <div>index: ${i}</div>
+      <div>kind: ${fruits[i].kind}</div>
+      <div>color: ${fruits[i].color}</div>
+      <div>weight (кг): ${fruits[i].weight}</div>
+    </div>`;
+    fruitsList.appendChild(newLi);
   }
 };
 
@@ -49,7 +63,12 @@ const getRandomInt = (min, max) => {
 // перемешивание массива
 const shuffleFruits = () => {
   let result = [];
-
+  let resultClass = [];
+  let initFruits = [];
+  fruits.forEach(elem => initFruits.push(elem));
+  
+  
+  let marker = true; //по умолчанию массив после перемешивания совпадает с изначальным
   // ATTENTION: сейчас при клике вы запустите бесконечный цикл и браузер зависнет
   while (fruits.length > 0) {
     // TODO: допишите функцию перемешивания массива
@@ -58,9 +77,28 @@ const shuffleFruits = () => {
     // вырезаем его из fruits и вставляем в result.
     // ex.: [1, 2, 3], [] => [1, 3], [2] => [3], [2, 1] => [], [2, 1, 3]
     // (массив fruits будет уменьшатся, а result заполняться)
+    let randomIndex = getRandomInt(0, fruits.length - 1);
+    result.push(fruits[randomIndex]);
+    fruits.splice(randomIndex, 1);
+
+    resultClass.push(classColor[randomIndex]);
+    classColor.splice(randomIndex, 1);
+    
   }
 
-  fruits = result;
+    //initFruits.forEach (elem => console.log(elem));
+  result.forEach((element, index) => {if (element !== initFruits[index]) marker = false});
+  
+ if (marker) {
+  alert ("Массив совпадает с изначальным!");
+  
+    fruits = result;
+    classColor = resultClass;
+    
+ } else {
+    fruits = result;
+    classColor = resultClass;
+  }
 };
 
 shuffleButton.addEventListener('click', () => {
