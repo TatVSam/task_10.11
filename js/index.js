@@ -8,11 +8,15 @@ const sortChangeButton = document.querySelector('.sort__change__btn'); // кно
 const sortActionButton = document.querySelector('.sort__action__btn'); // кнопка сортировки
 const kindInput = document.querySelector('.kind__input'); // поле с названием вида
 const colorInput = document.querySelector('.color__input'); // поле с названием цвета
+const weightInput = document.querySelector('.weight__input'); // поле с весом
 const minWeightInput = document.querySelector('.minweight__input'); // поле с весом
 const maxWeightInput = document.querySelector('.maxweight__input'); // поле с весом
 const addActionButton = document.querySelector('.add__action__btn'); // кнопка добавления
-//var classColor = ["violet", "green", "carmazin", "yellow", "lightbrown"];
-let colorEngArray = ["violet", "green", "carmazin", "yellow", "lightbrown"];
+
+let colorEngArray = ["purple", "green", "crimson", "yellow", "sandybrown", "olive", "orangered", "plum", "rosybrown", 
+"tomato", "wheat", "yellowgreen", "red", "peachpuff", "orange", "lime"];
+let colorRusArray = ["фиолетовый", "зеленый", "розово-красный", "желтый", "светло-коричневый", "оливковый", "оранжево-красный", "сливовый", 
+"розово-коричневый", "томатный", "пшеничный", "желто-зеленый", "красный", "темно-персиковый", "оранжевый", "лайм"];
 
 // список фруктов в JSON формате
 let fruitsJSON = `[
@@ -27,14 +31,20 @@ let fruitsJSON = `[
 // преобразование JSON в объект JavaScript
 let fruits = JSON.parse(fruitsJSON);
 
-const colorRusToEng = fruits.map ((fruit, index) => ({
-  colorRus: fruit.color,
-  colorEng: colorEngArray[index]
+const colorRusEng = colorEngArray.map ((engFruit, index) => ({
+  colorRus: colorRusArray[index],
+  colorEng: engFruit
 
 }));
 
+
+
 function engColorFromRus (color) {
-  return colorRusToEng[colorRusToEng.findIndex(el => el.colorRus == color)].colorEng
+  return colorRusEng[colorRusEng.findIndex(el => el.colorRus == color)].colorEng
+}
+
+function rusColorFromEng (color) {
+  return colorRusEng[colorRusEng.findIndex(el => el.colorEng == color)].colorRus
 }
 
 
@@ -61,7 +71,9 @@ const display = () => {
       <div>weight (кг): ${fruits[i].weight}</div>
     </div>`;
    
-    newLi.className = `fruit__item fruit_${engColorFromRus(fruits[i].color)}`;
+    //newLi.className = `fruit__item fruit_${engColorFromRus(fruits[i].color)}`;
+    newLi.className = `fruit__item`;
+    newLi.style.background = engColorFromRus(fruits[i].color);
     fruitsList.appendChild(newLi);
   }
 };
@@ -142,14 +154,15 @@ let sortKind = 'bubbleSort'; // инициализация состояния в
 let sortTime = '-'; // инициализация состояния времени сортировки
 
 const comparationColor = (fruit1, fruit2) => {
-  const priority = ['розово-красный', 'желтый', 'светло-коричневый', 'зеленый', 'фиолетовый'];
+  const priority = ['красный', 'оранжево-красный', 'томатный', 'розово-красный', 'розово-коричневый', 'оранжевый', 'светло-коричневый', 
+  'темно-персиковый', 'пшеничный', 'желтый',  'желто-зеленый', 'оливковый', 'зеленый', 'лайм',  'сливовый', 'фиолетовый'];
   const priority1 = priority.indexOf(fruit1.color);
   const priority2 = priority.indexOf(fruit2.color);
   return priority1 > priority2;
 };
 
 const sortAPI = {
- bubbleSort(arr, comparation) {
+  bubbleSort(arr, comparation) {
     // TODO: допишите функцию сортировки пузырьком
     const n = arr.length;
     // внешняя итерация по элементам
@@ -166,47 +179,55 @@ const sortAPI = {
   },
 
  
-quickSort(arr, comparation) {
+  quickSort(arr, comparation) {
     // TODO: допишите функцию быстрой сортировки
    // функция разделитель
-function partition(items, left, right) {
-  var pivot = items[Math.floor((right + left) / 2)],
-      i = left,
-      j = right;
-  while (i <= j) {
-      while (comparation (pivot, items[i])) {
+    function partition(items, left, right) {
+      var pivot = items[Math.floor((right + left) / 2)],
+        i = left,
+        j = right;
+      while (i <= j) {
+        while (comparation (pivot, items[i])) {
           i++;
-      }
-      while (comparation (items[j], pivot)) {
+        }
+
+        while (comparation (items[j], pivot)) {
           j--;
-      }
-      if (i <= j) {
+        }
+
+        if (i <= j) {
           [items[i], items[j]] = [items[j], items[i]];
           i++;
           j--;
+        }
       }
-  }
-  return i;
-}
+      return i;
+    }
 
-function quickSortAlgorithm (items, left, right) {
-  var index;
-  if (items.length > 1) {
-      left = typeof left != "number" ? 0 : left;
-      right = typeof right != "number" ? items.length - 1 : right;
-      index = partition(items, left, right);
-      if (left < index - 1) {
+    function quickSortAlgorithm (items, left, right) {
+      var index;
+  
+      if (items.length > 1) {
+      
+        left = typeof left != "number" ? 0 : left;
+        right = typeof right != "number" ? items.length - 1 : right;
+        index = partition(items, left, right);
+      
+        if (left < index - 1) {
           quickSortAlgorithm(items, left, index - 1);
-      }
-      if (index < right) {
+        }
+      
+        if (index < right) {
           quickSortAlgorithm(items, index, right);
+        }
       }
-  }
-  return items;
-  }
-   return quickSortAlgorithm (arr);
+  
+      return items;
+    }
+   
+    return quickSortAlgorithm (arr);
  
-  },
+  }, //end quickSort
 
   // выполняет сортировку и производит замер времени
   startSort(sort, arr, comparation) {
@@ -242,5 +263,13 @@ sortActionButton.addEventListener('click', () => {
 addActionButton.addEventListener('click', () => {
   // TODO: создание и добавление нового фрукта в массив fruits
   // необходимые значения берем из kindInput, colorInput, weightInput
+  let newFruit = {};
+  //console.log(kindInput.value);
+  newFruit.kind = kindInput.value;
+  newFruit.color = rusColorFromEng(colorInput.value);
+  newFruit.weight = weightInput.value / 1;
+  
+  fruits.push(newFruit);
+  console.log(fruits);
   display();
 });

@@ -47,6 +47,20 @@ input {
   max-width: 200px;
 }
 
+select {
+  margin: 5px 10px 5px 0;
+  border: 0;
+  padding: 0 10px;
+  line-height: 36px;
+  display: inline-block;
+  vertical-align: middle;
+  white-space: normal;
+  background: none;
+  background-color: #3cbc8d;
+  color: white;
+  max-width: 200px;
+}
+
 input::placeholder {
   color: rgb(242, 241, 241);
 }
@@ -111,7 +125,7 @@ main {
   border-radius: 10px;
 }
 
-.fruit_violet {
+/*.fruit_violet {
   background: #8b00ff;
 }
 
@@ -129,7 +143,7 @@ main {
 
 .fruit_lightbrown {
   background: #cd853f;
-}
+}*/
 
 .fruit__info {
   display: flex;
