@@ -18,6 +18,9 @@ let colorEngArray = ["purple", "green", "crimson", "yellow", "sandybrown", "oliv
 let colorRusArray = ["фиолетовый", "зеленый", "розово-красный", "желтый", "светло-коричневый", "оливковый", "оранжево-красный", "сливовый", 
 "розово-коричневый", "томатный", "пшеничный", "желто-зеленый", "красный", "темно-персиковый", "оранжевый", "лайм"];
 
+var fruitsFiltered = [];
+
+
 // список фруктов в JSON формате
 let fruitsJSON = `[
   {"kind": "Мангустин", "color": "фиолетовый", "weight": 13},
@@ -49,11 +52,11 @@ function rusColorFromEng (color) {
   return colorRusEng[colorRusEng.findIndex(el => el.colorEng == color)].colorRus
 }
 
-
+fruits.forEach ((elem, index) => fruitsFiltered[index] = elem);
 /*** ОТОБРАЖЕНИЕ ***/
 
 // отрисовка карточек
-const display = () => {
+const display = (fruits) => {
   // очищаем fruitsList от вложенных элементов,
   // чтобы заполнить актуальными данными из fruits
   fruitsList.innerHTML = "";
@@ -82,7 +85,7 @@ const display = () => {
 };
 
 // первая отрисовка карточек
-display();
+display(fruitsFiltered);
 
 /*** ПЕРЕМЕШИВАНИЕ ***/
 
@@ -92,7 +95,7 @@ const getRandomInt = (min, max) => {
 };
 
 // перемешивание массива
-const shuffleFruits = () => {
+const shuffleFruits = (fruits) => {
   let result = [];
   
   let initFruits = [];
@@ -114,18 +117,18 @@ const shuffleFruits = () => {
     
   }
 
-    //initFruits.forEach (elem => console.log(elem));
+    
   result.forEach((element, index) => {if (element !== initFruits[index]) marker = false});
   
   if (marker) alert ("Массив совпадает с изначальным!");
   
-  fruits = result;    
+  return result;    
   
 };
 
 shuffleButton.addEventListener('click', () => {
-  shuffleFruits();
-  display();
+  fruitsFiltered = shuffleFruits(fruitsFiltered);
+  display(fruitsFiltered);
 });
 
 /*** ФИЛЬТРАЦИЯ ***/
@@ -146,9 +149,8 @@ const filterFruits = () => {
 };
 
 filterButton.addEventListener('click', () => {
-  fruits = filterFruits();
-  
-  display();
+  fruitsFiltered = filterFruits();
+  display(fruitsFiltered);
 });
 
 /*** СОРТИРОВКА ***/
@@ -256,8 +258,8 @@ sortActionButton.addEventListener('click', () => {
   // TODO: вывести в sortTimeLabel значение 'sorting...'
   sortTimeLabel.textContent = 'sorting...';
   const sort = sortAPI[sortKind];
-  sortAPI.startSort(sort, fruits, comparationColor);
-  display();
+  sortAPI.startSort(sort, fruitsFiltered, comparationColor);
+  display(fruitsFiltered);
   // TODO: вывести в sortTimeLabel значение sortTime
   sortTimeLabel.textContent = sortTime;
 });
@@ -288,7 +290,9 @@ addActionButton.addEventListener('click', () => {
   newFruit.weight = weightInput.value / 1;
   
   fruits.push(newFruit);
-  console.log(fruits);
-  display();
+  minWeightInput.value = 0;
+  maxWeightInput.value = '-';
+  
+  display(fruits);
   }
 });
