@@ -31,6 +31,7 @@ let fruitsJSON = `[
 // преобразование JSON в объект JavaScript
 let fruits = JSON.parse(fruitsJSON);
 
+//создание массива объектов, содержащих названия цветов на русском и английском языках
 const colorRusEng = colorEngArray.map ((engFruit, index) => ({
   colorRus: colorRusArray[index],
   colorEng: engFruit
@@ -38,11 +39,12 @@ const colorRusEng = colorEngArray.map ((engFruit, index) => ({
 }));
 
 
-
+//получение английского цвета из русского
 function engColorFromRus (color) {
   return colorRusEng[colorRusEng.findIndex(el => el.colorRus == color)].colorEng
 }
 
+//получение русского цвета из английского
 function rusColorFromEng (color) {
   return colorRusEng[colorRusEng.findIndex(el => el.colorEng == color)].colorRus
 }
@@ -52,7 +54,7 @@ function rusColorFromEng (color) {
 
 // отрисовка карточек
 const display = () => {
-  // TODO: очищаем fruitsList от вложенных элементов,
+  // очищаем fruitsList от вложенных элементов,
   // чтобы заполнить актуальными данными из fruits
   fruitsList.innerHTML = "";
   
@@ -73,6 +75,7 @@ const display = () => {
    
     //newLi.className = `fruit__item fruit_${engColorFromRus(fruits[i].color)}`;
     newLi.className = `fruit__item`;
+    //рисуем рамку соответствующего цвета
     newLi.style.background = engColorFromRus(fruits[i].color);
     fruitsList.appendChild(newLi);
   }
@@ -97,11 +100,11 @@ const shuffleFruits = () => {
   
   
   let marker = true; //по умолчанию массив после перемешивания совпадает с изначальным
-  // ATTENTION: сейчас при клике вы запустите бесконечный цикл и браузер зависнет
+ 
   while (fruits.length > 0) {
-    // TODO: допишите функцию перемешивания массива
+    // функция перемешивания массива
     //
-    // Подсказка: находим случайный элемент из fruits, используя getRandomInt
+    // находим случайный элемент из fruits, используя getRandomInt
     // вырезаем его из fruits и вставляем в result.
     // ex.: [1, 2, 3], [] => [1, 3], [2] => [3], [2, 1] => [], [2, 1, 3]
     // (массив fruits будет уменьшатся, а result заполняться)
@@ -129,10 +132,10 @@ shuffleButton.addEventListener('click', () => {
 
 // фильтрация массива
 const filterFruits = () => {
-  
+  //ввод данных по умолчанию при нечисловых значениях и отрицательном значении веса
   let minWeight = minWeightInput.value / 1 || 0;
   let maxWeight = maxWeightInput.value / 1 || 50;
-  minWeight = minWeight < 0 ? 12 : minWeight;
+  minWeight = minWeight < 0 ? 0 : minWeight;
   maxWeight = maxWeight < 0 ? 50 : maxWeight;
 
   const filteredFruits = fruits.filter(item => item.weight >= minWeight && item.weight <= maxWeight);
@@ -154,8 +157,9 @@ let sortKind = 'bubbleSort'; // инициализация состояния в
 let sortTime = '-'; // инициализация состояния времени сортировки
 
 const comparationColor = (fruit1, fruit2) => {
+  //массив по цветам радуги
   const priority = ['красный', 'оранжево-красный', 'томатный', 'розово-красный', 'розово-коричневый', 'оранжевый', 'светло-коричневый', 
-  'темно-персиковый', 'пшеничный', 'желтый',  'желто-зеленый', 'оливковый', 'зеленый', 'лайм',  'сливовый', 'фиолетовый'];
+  'темно-персиковый', 'пшеничный', 'желтый',  'лайм', 'желто-зеленый', 'оливковый', 'зеленый',  'сливовый', 'фиолетовый'];
   const priority1 = priority.indexOf(fruit1.color);
   const priority2 = priority.indexOf(fruit2.color);
   return priority1 > priority2;
@@ -263,6 +267,20 @@ sortActionButton.addEventListener('click', () => {
 addActionButton.addEventListener('click', () => {
   // TODO: создание и добавление нового фрукта в массив fruits
   // необходимые значения берем из kindInput, colorInput, weightInput
+  //добавлены условия на правильный ввод
+  if (kindInput.value == '') {
+    alert ('Не все поля заполнены!');
+    kindInput.focus();
+  } else if (weightInput.value == '') {
+    alert ('Не все поля заполнены!');
+    weightInput.focus();
+  } else if (isNaN (weightInput.value / 1)) {
+    alert ('В поле weight введено нечисловое значение!');
+    weightInput.focus();
+  } else if (weightInput.value < 0) {
+    alert ('Вес не может быть отрицательным числом!');
+    weightInput.focus();
+  } else {
   let newFruit = {};
   //console.log(kindInput.value);
   newFruit.kind = kindInput.value;
@@ -272,4 +290,5 @@ addActionButton.addEventListener('click', () => {
   fruits.push(newFruit);
   console.log(fruits);
   display();
+  }
 });
