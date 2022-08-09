@@ -293,6 +293,7 @@ addActionButton.addEventListener('click', () => {
   minWeightInput.value = 0;
   maxWeightInput.value = '-';
   
-  display(fruits);
+  fruits.forEach((elem, index) => fruitsFiltered[index] = elem);
+  display(fruitsFiltered);
   }
 });
